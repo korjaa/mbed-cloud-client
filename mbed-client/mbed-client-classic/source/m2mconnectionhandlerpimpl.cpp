@@ -32,6 +32,7 @@
 
 #include "mbed-trace/mbed_trace.h"
 
+#include <stdio.h>
 #include <stdlib.h> // free() and malloc()
 
 #define TRACE_GROUP "mClt"
@@ -328,6 +329,7 @@ bool M2MConnectionHandlerPimpl::resolve_server_address(const String& server_addr
         }
     }
 #endif
+    printf("_socket_state = ESocketStateDNSResolving\n");
     _socket_state = ESocketStateDNSResolving;
     _security = security;
 
@@ -442,12 +444,14 @@ void M2MConnectionHandlerPimpl::socket_connect_handler()
                     // will be used to detect the end of connect.
                     tr_debug("M2MConnectionHandlerPimpl::socket_connect_handler - pal_connect(): %d, async connect started", (int)status);
                     // we need to wait for the event
+                    printf("_socket_state = ESocketStateConnecting\n");
                     _socket_state = ESocketStateConnecting;
                     break;
 
                 } else if (status == PAL_SUCCESS || status == PAL_ERR_SOCKET_ALREADY_CONNECTED) {
 
                     tr_debug("M2MConnectionHandlerPimpl::socket_connect_handler - pal_connect(): success");
+                    printf("_socket_state = ESocketStateConnected\n");
                     _socket_state = ESocketStateConnected;
 
                 } else {
@@ -473,6 +477,7 @@ void M2MConnectionHandlerPimpl::socket_connect_handler()
                         int ret_code = _security_impl->init(_security, security_instance_id);
                         if (ret_code == M2MConnectionHandler::ERROR_NONE) {
                             // Initiate handshake. Perhaps there could be a separate event type for this?
+                            printf("_socket_state = ESocketStateHandshaking\n");
                             _socket_state = ESocketStateHandshaking;
                             send_socket_event(ESocketCallback);
                         } else {
@@ -698,6 +703,7 @@ void M2MConnectionHandlerPimpl::receive_handshake_handler()
     if (return_value == M2MConnectionHandler::ERROR_NONE) {
 
         _handshake_retry = 0;
+        printf("_socket_state = ESocketStateSecureConnection\n");
         _socket_state = ESocketStateSecureConnection;
         _observer.address_ready(_address,
                                 _server_type,

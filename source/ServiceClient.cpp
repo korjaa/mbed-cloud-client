@@ -93,18 +93,26 @@ void ServiceClient::initialize_and_register(M2MBaseList& reg_objs)
             tr_debug("ServiceClient::initialize_and_register: update IDs defined");
 
             /* Delete VendorId */
+            printf("ccs_delete_item(\"mbed.VendorId\")\n");
             ccs_delete_item("mbed.VendorId", CCS_CONFIG_ITEM);
+            printf("ccs_delete_item(\"mbed.VendorId\") done\n");
             /* Store Vendor Id to mbed.VendorId. No conversion is performed. */
+            printf("set_device_resource_value(M2MDevice::Manufacturer)\n");
             set_device_resource_value(M2MDevice::Manufacturer,
                                       (const char*) arm_uc_vendor_id,
                                       arm_uc_vendor_id_size);
+            printf("set_device_resource_value(M2MDevice::Manufacturer) done\n");
 
             /* Delete ClassId */
+            printf("ccs_delete_item(\"mbed.ClassId\")\n");
             ccs_delete_item("mbed.ClassId", CCS_CONFIG_ITEM);
+            printf("ccs_delete_item(\"mbed.ClassId\") done\n");
             /* Store Class Id to mbed.ClassId. No conversion is performed. */
+            printf("set_device_resource_value(M2MDevice::ModelNumber)\n");
             set_device_resource_value(M2MDevice::ModelNumber,
                                       (const char*) arm_uc_class_id,
                                       arm_uc_class_id_size);
+            printf("set_device_resource_value(M2MDevice::ModelNumber) done\n");
 #endif /* MBED_CLOUD_DEV_UPDATE_ID */
 
 #ifdef ARM_UPDATE_CLIENT_VERSION
@@ -118,36 +126,50 @@ void ServiceClient::initialize_and_register(M2MBaseList& reg_objs)
             size_t size = 0;
 
             /* check if software version is already set */
+            printf("ccs_delete_item(KEY_DEVICE_SOFTWAREVERSION)\n");
             ccs_status_e status = ccs_get_item(KEY_DEVICE_SOFTWAREVERSION,
                                                buffer, buffer_size, &size, CCS_CONFIG_ITEM);
+            printf("ccs_delete_item(KEY_DEVICE_SOFTWAREVERSION) done\n");
 
             if (status == CCS_STATUS_KEY_DOESNT_EXIST) {
                 tr_debug("ServiceClient::initialize_and_register: insert update version");
 
                 /* insert value from Update Client Common */
+                printf("set_device_resource_value(KEY_DEVICE_SOFTWAREVERSION)\n");
                 ccs_set_item(KEY_DEVICE_SOFTWAREVERSION,
                              (const uint8_t*) ARM_UPDATE_CLIENT_VERSION,
                              sizeof(ARM_UPDATE_CLIENT_VERSION),
                              CCS_CONFIG_ITEM);
+                printf("set_device_resource_value(KEY_DEVICE_SOFTWAREVERSION) done\n");
             }
 #endif /* ARM_UPDATE_CLIENT_VERSION */
 
             /* Update Client adds the OMA LWM2M Firmware Update object */
+            printf("UpdateClient::populate_object_list()\n");
             UpdateClient::populate_object_list(*_client_objs);
+            printf("UpdateClient::populate_object_list() done\n");
 
             /* Initialize Update Client */
             FP1<void, int32_t> callback(this, &ServiceClient::update_error_callback);
+            printf("UpdateClient::UpdateClient()\n");
             UpdateClient::UpdateClient(callback, _connector_client.m2m_interface(), this);
+            printf("UpdateClient::UpdateClient() done\n");
         }
         // else branch is required for re-initialization. 
         else {
+            printf("finish_initialization()\n");
             finish_initialization();
+            printf("finish_initialization() done\n");
         }
 #else /* MBED_CLOUD_CLIENT_SUPPORT_UPDATE */
+        printf("finish_initialization()\n");
         finish_initialization();
+        printf("finish_initialization() done\n");
 #endif /* MBED_CLOUD_CLIENT_SUPPORT_UPDATE */
     } else if (_current_state == State_Success) {
+        printf("state_success()\n");
         state_success();
+        printf("state_success() done\n");
     }
 }
 

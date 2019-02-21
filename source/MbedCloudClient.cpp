@@ -101,7 +101,9 @@ bool MbedCloudClient::setup(void* iface)
     }
     _client.connector_client().m2m_interface()->set_platform_network_handler(iface);
 
+    printf("_client.initialize_and_register()\n");
     _client.initialize_and_register(_object_list);
+    printf("_client.initialize_and_register() done\n");
     return true;
 }
 
