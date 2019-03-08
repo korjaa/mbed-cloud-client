@@ -20,6 +20,7 @@
 #include "mbed-cloud-client/MbedCloudClient.h"
 #include "mbed-cloud-client/SimpleM2MResource.h"
 
+#include <stdio.h>
 #include "mbed-trace/mbed_trace.h"
 #ifndef MBED_CONF_MBED_CLOUD_CLIENT_DISABLE_CERTIFICATE_ENROLLMENT
 #include "CertificateEnrollmentClient.h"
